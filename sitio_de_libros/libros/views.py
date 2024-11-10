@@ -1,14 +1,20 @@
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render,redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Book
 from .forms import BookForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 
 
 class IndexPageView(TemplateView): # un view o controlador con una clase
     template_name = 'libros/index.html'
 
+@login_required
 def lista_libro(request):
     books = Book.objects.all()
     libro_filtrado = Book.objects.filter(valoracion__gt=1500)
@@ -18,6 +24,7 @@ def lista_libro(request):
         'libro_filtrado': libro_filtrado  # Libros filtrados
     })
 
+@login_required
 def ingresar_libro(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -40,6 +47,20 @@ def ingresar_usuario(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'libros/registro_usuario.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password) # autentica el usuario en la db
+        if user is not None: # si existe
+            login(request, user) # persistir la sesión del usuario
+            return redirect('index') # redireccionar a ruta seeleccionada
+        else:
+            messages.error(request, 'Credenciales inválidas')
+            return HttpResponseRedirect(reverse('login'))
+    else:
+        return render(request, 'libros/login.html')  
 
 
 
