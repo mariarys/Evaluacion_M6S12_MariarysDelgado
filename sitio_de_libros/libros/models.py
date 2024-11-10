@@ -1,4 +1,3 @@
-# models.py
 from django.db import models
 
 class Book(models.Model):
@@ -7,5 +6,12 @@ class Book(models.Model):
     autor = models.CharField(max_length=50, null=False)
     valoracion = models.IntegerField(help_text='Valoración entre 0 y 100')
 
+    class Meta:
+        permissions = [
+            ("development", "Permiso como Desarrollador"),
+            ("scrum_master", "Permiso como Scrum Master"),
+            ("product_owner", "Permiso como Product Owner"),
+        ]
+
     def __str__(self):
-        return f"{self.titulo} - {self.autor} (Valoración: {self.valoracion})"
+        return self.title
