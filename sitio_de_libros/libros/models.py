@@ -21,4 +21,4 @@ class Book(models.Model):
         ]
 
     def __str__(self):
-        return self.titulo  # Corregido para usar 'titulo' en vez de 'title'
+        return self.titulo  

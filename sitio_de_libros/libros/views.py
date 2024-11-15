@@ -63,4 +63,10 @@ def user_login(request):
         return render(request, 'libros/login.html')  
 
 
+@login_required
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'lista_libros.html', {'books': books})
+
+
 
